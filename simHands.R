@@ -1,4 +1,4 @@
-simHands <- function(totalSims) {
+simHands <- function(totalSims, totalHands) {
   
   # Initialize results
   sims <- vector("list", totalSims)
@@ -15,17 +15,16 @@ simHands <- function(totalSims) {
   return (sims)
 }
 
-evalRule <- function(totalSims, rules, totalPlayers, sims, isInSimpleFun) {
+evalRule <- function(totalSims, rules, possibleHands, totalPlayers, sims, isInFun) {
+  
+  ruleValues <- possibleHands[rules, "HandValue"]
   
   results <- rep(0, totalPlayers)
   x <- 1
   while(x <= totalSims) {
-    results <- results + calcOutcomes(sims[[x]], rules, totalPlayers, isInSimpleFun) 
+    results <- results + calcOutcomes(sims[[x]], ruleValues, totalPlayers, isInFun) 
     x <- x + 1
   }
 
   return (results)
 }
-
-
-

@@ -1,15 +1,4 @@
-# Rule declare in order
-# 0 in
-# 1 prior player in by position
-# 2 in
-# 3 in
-# 4 in ...
-
-isInSimpleFun <- function(rules, idx, handValue, isPlayerIn) {
-  return (rules[idx] <= handValue)
-}
-
-calcOutcomes <- function(handRanks, rules, totalPlayers, isInFun) {
+calcOutcomes <- function(handRanks, ruleValues, totalPlayers, isInFun) {
 
   maxHand <- 0
   totalPlayerIn <- 0
@@ -21,7 +10,7 @@ calcOutcomes <- function(handRanks, rules, totalPlayers, isInFun) {
     
     # Determine if player is In given hand value
     handValue <- handRanks[[idx]][5]
-    isIn <- isInFun(rules, idx, handValue, isPlayerIn)  
+    isIn <- isInFun(ruleValues, idx, handValue, isPlayerIn)  
     isPlayerIn[idx] <- isIn
     
     # Calc max hand value, total In players and total winners
@@ -49,11 +38,11 @@ calcOutcomes <- function(handRanks, rules, totalPlayers, isInFun) {
       handValue <- handRanks[[idx]][5]
       if (maxHand == handValue) {
         # Player won or tied.  Ties split.
-        outcome <- 1 / totalWinners
+        outcome <- totalPlayers / totalWinners  # 1 / totalWinners
       }
       else {
         # Player lost
-        outcome <- -1
+        outcome <- -totalPlayers  # -1
       }
     }
     else {
@@ -61,10 +50,13 @@ calcOutcomes <- function(handRanks, rules, totalPlayers, isInFun) {
       outcome <- 0
     }
     
-    # First part takes into account ante
-    # Second part takes into account outcome
-    # Third part takes into account future expected value (i.e. share pot).
-    playerOutcome[idx] <- -1 / totalPlayers + outcome + totalLosers / totalPlayers
+    if (totalPlayerIn == 0)
+      playerOutcome[idx] = 0
+    else
+      # First part takes into account ante
+      # Second part takes into account outcome
+      # Third part takes into account future expected value (i.e. share pot).
+      playerOutcome[idx] <- -1 + outcome + totalLosers      #-1 / totalPlayers + outcome + totalLosers / totalPlayers
   }
   
   return (playerOutcome)
